@@ -1,6 +1,6 @@
 ## Summary
 
-- 
+-
 
 ## Type
 
@@ -46,7 +46,7 @@ Results:
 
 Known gaps:
 
-- 
+-
 
 ## Safety Checklist
 
