@@ -7,7 +7,7 @@ const path = require('node:path');
 const util = require('node:util');
 const vm = require('node:vm');
 
-const VERSION = 'codex-app-ubuntu-node-repl-shim-1';
+const VERSION = 'codex-app-linux-node-repl-shim-1';
 const DEFAULT_TIMEOUT_MS = 120_000;
 const MAX_OUTPUT_CHARS = 1_000_000;
 

@@ -3,8 +3,8 @@ set -euo pipefail
 
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 
-install_root="${CODEX_APP_UBUNTU_ROOT:-$HOME/.local/share/codex-app-ubuntu}"
-bin_dir="${CODEX_APP_UBUNTU_BIN_DIR:-$HOME/.local/bin}"
+install_root="${CODEX_APP_LINUX_ROOT:-${CODEX_APP_UBUNTU_ROOT:-$HOME/.local/share/codex-app-linux}}"
+bin_dir="${CODEX_APP_LINUX_BIN_DIR:-${CODEX_APP_UBUNTU_BIN_DIR:-$HOME/.local/bin}}"
 applications_dir="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 service_dir="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
 install_service=0
@@ -16,7 +16,7 @@ usage() {
 usage: scripts/install.sh [--service] [--keep-work] /path/to/Codex-latest-x64.dmg
 
 Options:
-  --service    Install a systemd user service named codex-app-ubuntu.
+  --service    Install a systemd user service named codex-app-linux.
   --keep-work  Keep temporary extraction/build directories for debugging.
 USAGE
 }
@@ -61,7 +61,7 @@ fail() {
 }
 
 log() {
-  printf '[codex-app-ubuntu] %s\n' "$*"
+  printf '[codex-app-linux] %s\n' "$*" >&2
 }
 
 require_cmd() {
@@ -79,7 +79,7 @@ find_7z() {
     command -v 7zz
     return
   fi
-  fail "missing 7z/7zz. Install p7zip-full: sudo apt install p7zip-full"
+  fail "missing 7z/7zz. Install p7zip-full on Ubuntu or p7zip/p7zip-plugins on Fedora."
 }
 
 shell_quote() {
@@ -164,7 +164,7 @@ if [ -n "\${DEFAULT_CODEX_BIN}" ] && [ -z "\${CODEX_CLI_PATH:-}" ]; then
   export CODEX_CLI_PATH="\$DEFAULT_CODEX_BIN"
 fi
 
-export CODEX_ELECTRON_USER_DATA_PATH="\${CODEX_ELECTRON_USER_DATA_PATH:-\$HOME/.local/share/codex-app-ubuntu/user-data}"
+export CODEX_ELECTRON_USER_DATA_PATH="\${CODEX_ELECTRON_USER_DATA_PATH:-\$HOME/.local/share/codex-app-linux/user-data}"
 export CODEX_BROWSER_USE_NODE_PATH="\${CODEX_BROWSER_USE_NODE_PATH:-\$DEFAULT_BROWSER_NODE}"
 export ELECTRON_OZONE_PLATFORM_HINT="\${ELECTRON_OZONE_PLATFORM_HINT:-x11}"
 
@@ -182,8 +182,8 @@ write_desktop_entry() {
   cat > "$desktop_file" <<DESKTOP
 [Desktop Entry]
 Type=Application
-Name=Codex Ubuntu Port
-Comment=Unofficial local Ubuntu launcher for Codex Desktop
+Name=Codex Linux Port
+Comment=Unofficial local Linux launcher for Codex Desktop
 Exec=$launcher %u
 Terminal=false
 Categories=Development;
@@ -203,7 +203,7 @@ write_service() {
   mkdir -p "$(dirname "$service_file")"
   cat > "$service_file" <<SERVICE
 [Unit]
-Description=Codex Ubuntu Port
+Description=Codex Linux Port
 
 [Service]
 Type=simple
@@ -219,10 +219,10 @@ SERVICE
 
 require_cmd node "Install Node.js 22 or newer."
 require_cmd npm "Install npm."
-require_cmd rsync "Install rsync: sudo apt install rsync"
-require_cmd python3 "Install build dependencies: sudo apt install python3 make g++"
-require_cmd make "Install build dependencies: sudo apt install python3 make g++"
-require_cmd g++ "Install build dependencies: sudo apt install python3 make g++"
+require_cmd rsync "Install rsync. See docs/ubuntu.md or docs/fedora.md."
+require_cmd python3 "Install build dependencies. See docs/ubuntu.md or docs/fedora.md."
+require_cmd make "Install build dependencies. See docs/ubuntu.md or docs/fedora.md."
+require_cmd g++ "Install build dependencies. See docs/ubuntu.md or docs/fedora.md."
 
 sevenz="$(find_7z)"
 
@@ -231,7 +231,7 @@ sevenz="$(find_7z)"
 arch="$(uname -m)"
 [ "$arch" = "x86_64" ] || fail "only x86_64 Linux is currently supported; got $arch"
 
-work="$(mktemp -d "${TMPDIR:-/tmp}/codex-app-ubuntu.XXXXXX")"
+work="$(mktemp -d "${TMPDIR:-/tmp}/codex-app-linux.XXXXXX")"
 if [ "$keep_work" -eq 0 ]; then
   trap 'rm -rf "$work"' EXIT
 else
@@ -328,21 +328,21 @@ launcher="$bin_dir/codex-desktop-linux"
 log "writing launcher $launcher"
 write_launcher "$launcher" "$app_root" "$install_root/logs" "$browser_node" "$codex_bin"
 
-desktop_file="$applications_dir/codex-app-ubuntu.desktop"
+desktop_file="$applications_dir/codex-app-linux.desktop"
 icon_path="$app_root/resources/icon.png"
 [ -f "$icon_path" ] || icon_path="$app_root/resources/icon-codex-dark-color.png"
 log "writing desktop entry $desktop_file"
 write_desktop_entry "$desktop_file" "$launcher" "$icon_path"
 
 if command -v xdg-mime >/dev/null 2>&1; then
-  xdg-mime default codex-app-ubuntu.desktop x-scheme-handler/codex || true
+  xdg-mime default codex-app-linux.desktop x-scheme-handler/codex || true
 fi
 if command -v update-desktop-database >/dev/null 2>&1; then
   update-desktop-database "$applications_dir" || true
 fi
 
 if [ "$install_service" -eq 1 ]; then
-  service_file="$service_dir/codex-app-ubuntu.service"
+  service_file="$service_dir/codex-app-linux.service"
   log "writing user service $service_file"
   write_service "$service_file" "$launcher"
 fi

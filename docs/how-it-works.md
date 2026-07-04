@@ -10,6 +10,9 @@ desktop platforms. This project performs a local compatibility conversion:
 - patch Linux window options so GNOME manages the windows normally
 - install a Linux launcher and desktop entry
 
+The installer is shared across distro flavors. Distro-specific setup lives in
+small dependency guides such as `docs/ubuntu.md` and `docs/fedora.md`.
+
 The most important Linux window patch is avoiding unmanaged override-redirect
 windows for the primary app window. The patch keeps Linux primary windows
 framed, taskbar-visible, minimizable, maximizable, resizable, and workspace
@@ -22,9 +25,9 @@ Linux Node.js MCP shim. That shim is original code in this repository.
 Generated files are installed under:
 
 ```text
-~/.local/share/codex-app-ubuntu/
+~/.local/share/codex-app-linux/
 ~/.local/bin/codex-desktop-linux
-~/.local/share/applications/codex-app-ubuntu.desktop
+~/.local/share/applications/codex-app-linux.desktop
 ```
 
 Those paths are install output, not source code for this repository.

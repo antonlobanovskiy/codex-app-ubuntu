@@ -1,6 +1,6 @@
-# Codex App Ubuntu
+# Codex App Linux
 
-Unofficial Ubuntu installer for running the OpenAI Codex desktop app from a
+Unofficial Linux installer for running the OpenAI Codex desktop app from a
 user-supplied macOS Intel DMG.
 
 This repository does not contain the Codex desktop app, the DMG, a repacked
@@ -11,6 +11,7 @@ patches, and documentation.
 ## Status
 
 - Tested on Ubuntu 24.04 x86_64 with GNOME/X11.
+- Fedora Workstation support is being added as a distro flavor.
 - Requires an OpenAI Codex desktop DMG that you already obtained from OpenAI.
 - Requires the Codex CLI to be installed and authenticated separately.
 - This is unsupported by OpenAI.
@@ -18,6 +19,16 @@ patches, and documentation.
 OpenAI's public docs describe the Codex app as available on macOS and Windows.
 The open-source component used by rich clients is the Codex app-server in the
 `openai/codex` repository; the desktop app itself is not redistributed here.
+
+## Distro Flavors
+
+Use the same installer on each supported Linux distro. The distro-specific part
+is installing system packages before running `scripts/install.sh`.
+
+| Distro | Status | Setup |
+| --- | --- | --- |
+| Ubuntu 24.04 x86_64 | Tested | [docs/ubuntu.md](docs/ubuntu.md) |
+| Fedora Workstation x86_64 | Community support in progress | [docs/fedora.md](docs/fedora.md) |
 
 ## Quick Start
 
@@ -31,22 +42,10 @@ Download it from either source:
 - Direct current macOS Intel DMG:
   <https://persistent.oaistatic.com/codex-app-prod/Codex-latest-x64.dmg>
 
-On Ubuntu x86_64:
+Install dependencies for your distro:
 
-Install system dependencies first:
-
-```bash
-sudo apt update
-sudo apt install -y curl p7zip-full rsync python3 make g++
-```
-
-Install Node.js 22 or newer if `node --version` is older than `v22`:
-
-```bash
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-sudo apt install -y nodejs
-node --version
-```
+- Ubuntu: [docs/ubuntu.md](docs/ubuntu.md)
+- Fedora: [docs/fedora.md](docs/fedora.md)
 
 Download the required DMG:
 
@@ -68,28 +67,38 @@ codex login
 Clone this repository, run the installer, and launch the app:
 
 ```bash
-git clone https://github.com/antonlobanovskiy/codex-app-ubuntu.git
-cd codex-app-ubuntu
+git clone https://github.com/antonlobanovskiy/codex-app-linux.git
+cd codex-app-linux
 ./scripts/install.sh ~/Downloads/Codex-latest-x64.dmg
 codex-desktop-linux
 ```
 
-You can also launch it from your app menu as **Codex Ubuntu Port**.
+You can also launch it from your app menu as **Codex Linux Port**.
 
 ## AI Agent Runbook
 
-Give this section to an AI agent with shell access on Ubuntu x86_64. The agent
+Give this section to an AI agent with shell access on Linux x86_64. The agent
 should run the commands from a normal working directory such as `~/dev`.
 
 ```bash
 set -euo pipefail
 
-sudo apt update
-sudo apt install -y curl p7zip-full rsync python3 make g++
-
-if ! command -v node >/dev/null 2>&1 || [ "$(node -p 'Number(process.versions.node.split(".")[0])' 2>/dev/null || echo 0)" -lt 22 ]; then
-  curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-  sudo apt install -y nodejs
+if command -v apt-get >/dev/null 2>&1; then
+  sudo apt update
+  sudo apt install -y curl p7zip-full rsync xdg-utils python3 make g++
+  if ! command -v node >/dev/null 2>&1 || [ "$(node -p 'Number(process.versions.node.split(".")[0])' 2>/dev/null || echo 0)" -lt 22 ]; then
+    curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+    sudo apt install -y nodejs
+  fi
+elif command -v dnf >/dev/null 2>&1; then
+  sudo dnf install -y curl p7zip p7zip-plugins rsync xdg-utils python3 make gcc-c++ nodejs npm
+  if ! command -v node >/dev/null 2>&1 || [ "$(node -p 'Number(process.versions.node.split(".")[0])' 2>/dev/null || echo 0)" -lt 22 ]; then
+    echo "Node.js 22 or newer is required. Install or enable a newer Node.js package, then rerun this runbook." >&2
+    exit 1
+  fi
+else
+  echo "Unsupported package manager. Install curl, 7z, rsync, xdg-open, Node.js 22+, npm, python3, make, and a C++ compiler." >&2
+  exit 1
 fi
 
 mkdir -p "$HOME/Downloads"
@@ -102,8 +111,8 @@ codex login
 
 mkdir -p "$HOME/dev"
 cd "$HOME/dev"
-git clone https://github.com/antonlobanovskiy/codex-app-ubuntu.git
-cd codex-app-ubuntu
+git clone https://github.com/antonlobanovskiy/codex-app-linux.git
+cd codex-app-linux
 
 ./scripts/install.sh "$HOME/Downloads/Codex-latest-x64.dmg"
 codex-desktop-linux
@@ -127,7 +136,7 @@ Optional user service:
 
 ```bash
 ./scripts/install.sh --service ~/Downloads/Codex-latest-x64.dmg
-systemctl --user start codex-app-ubuntu
+systemctl --user start codex-app-linux
 ```
 
 ## What The Installer Does
@@ -138,7 +147,7 @@ systemctl --user start codex-app-ubuntu
 4. Rebuilds Linux native modules used by the app.
 5. Applies Linux window-manager compatibility patches.
 6. Installs a small Linux Node REPL/MCP shim for Browser Use.
-7. Repackages the local app into `~/.local/share/codex-app-ubuntu`.
+7. Repackages the local app into `~/.local/share/codex-app-linux`.
 8. Creates a launcher and desktop entry.
 
 ## Security Boundary
@@ -153,7 +162,8 @@ Before publishing changes to this repository, run:
 ```
 
 The audit fails on known risky file types, extracted app directories, auth
-caches, user-data, large binaries, and common token patterns.
+caches, user-data, large binaries, common token patterns, and stale public
+Ubuntu-specific project naming.
 
 ## Authentication
 
@@ -166,7 +176,7 @@ To log out:
 
 ```bash
 codex logout
-rm -rf ~/.local/share/codex-app-ubuntu/user-data
+rm -rf ~/.local/share/codex-app-linux/user-data
 ```
 
 ## Legal Notes
