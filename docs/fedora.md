@@ -4,8 +4,10 @@ These steps prepare Fedora before running the shared Linux installer.
 
 Community-tested target:
 
-- Fedora Linux 44 Workstation Edition x86_64
+- Fedora Linux 44 x86_64
 - Cinnamon desktop on X11
+
+GNOME/X11 and GNOME/Wayland still need separate validation.
 
 Install system packages:
 

@@ -11,7 +11,7 @@ patches, and documentation.
 ## Status
 
 - Tested on Ubuntu 24.04 x86_64 with GNOME/X11.
-- Tested on Fedora Linux 44 Workstation Edition x86_64 with Cinnamon/X11.
+- Tested on Fedora Linux 44 x86_64 with Cinnamon/X11.
 - Requires an OpenAI Codex desktop DMG that you already obtained from OpenAI.
 - Requires the Codex CLI to be installed and authenticated separately.
 - This is unsupported by OpenAI.
@@ -28,7 +28,7 @@ is installing system packages before running `scripts/install.sh`.
 | Distro | Status | Setup |
 | --- | --- | --- |
 | Ubuntu 24.04 x86_64 | Tested | [docs/ubuntu.md](docs/ubuntu.md) |
-| Fedora Workstation x86_64 | Tested | [docs/fedora.md](docs/fedora.md) |
+| Fedora Linux 44 Cinnamon/X11 x86_64 | Tested | [docs/fedora.md](docs/fedora.md) |
 
 See [docs/distro-support.md](docs/distro-support.md) for the full distro
 support matrix and test checklist. Contributions for new distros should follow

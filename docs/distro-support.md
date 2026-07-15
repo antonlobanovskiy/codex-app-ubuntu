@@ -15,7 +15,7 @@ test evidence from a real machine or VM.
 | Tested | Distro | Family | Setup guide | Last tested | Evidence | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | [x] | Ubuntu 24.04 LTS | Debian/Ubuntu | [ubuntu.md](ubuntu.md) | GNOME/X11, x86_64 | Initial project test | Baseline distro. |
-| [x] | Fedora Linux 44 Workstation Edition | Fedora/RHEL | [fedora.md](fedora.md) | Cinnamon/X11, x86_64 | Community PR | Installed with `dnf`; `scripts/install.sh` completed and `codex-desktop-linux` launched. Browser Use shim not tested. |
+| [x] | Fedora Linux 44 | Fedora/RHEL | [fedora.md](fedora.md) | Cinnamon/X11, x86_64 | Community PR | Installed with `dnf`; `scripts/install.sh` completed and `codex-desktop-linux` launched. Browser Use shim not tested; GNOME sessions not yet validated. |
 | [ ] | Debian Stable | Debian/Ubuntu | Needed | Pending | Needs PR | Likely close to Ubuntu with different Node.js setup. |
 | [ ] | Linux Mint | Debian/Ubuntu | Needed | Pending | Needs PR | Ubuntu-family desktop distro. |
 | [ ] | Pop!_OS | Debian/Ubuntu | Needed | Pending | Needs PR | Ubuntu-family desktop distro. |
